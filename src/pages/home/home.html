@@ -1,14 +1,20 @@
 <ion-header>
   <ion-navbar>
     <ion-title>
-      Ionic Blank
+      Vendors
     </ion-title>
   </ion-navbar>
 </ion-header>
 
 <ion-content padding>
-  The world is your oyster.
-  <p>
-    If you get lost, the <a href="http://ionicframework.com/docs/v2">docs</a> will be your guide.
-  </p>
+  <ion-list class="accordion-list">
+      <ion-list-header *ngFor="let item of data1; let i = index" no-lines no-padding>
+          <p>Name: {{ item.vendorName }}</p>
+          <p>Contact: {{ item.contact }}</p>
+          <p>Currency: {{ item.currency }}</p>
+          <p>{{ item.address }}</p>
+          <p>{{ item.city }}</p>
+          <p>{{ item.zip }}</p>
+          </ion-list-header>
+  </ion-list>
 </ion-content>

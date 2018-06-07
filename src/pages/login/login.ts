@@ -16,6 +16,7 @@ import {HomePage} from '../home/home'
   templateUrl: 'login.html',
   providers:[AuthServiceProvider]
 })
+
 export class LoginPage {
   loading: Loading;
   registerCredentials = {phoneNumber: ""};
@@ -29,20 +30,19 @@ export class LoginPage {
  
   public login() {
     this.showLoading();
+
+    this.registerCredentials.phoneNumber = "+91" + this.registerCredentials.phoneNumber;
     this.jsonObj = {"phoneNumber": this.registerCredentials.phoneNumber};
     console.log(this.jsonObj);
-    this.auth.login(this.registerCredentials);
-    //If success code is returned then move on to the Home Page
-    // .subscribe(data => {
-    //   if (data) {        
-    //     this.nav.push(HomePage);
-    //   } else {
-    //     this.showError("Access Denied");
-    //   }
-    // },
-    //   error => {
-    //     this.showError(error);
-    //   });
+    this.auth.login(this.registerCredentials).then(data=>{
+      if (data!='login failed') {        
+            console.log(data);
+            this.nav.push(HomePage);
+          }
+    })
+    .catch((message)=>{
+      this.showError(message);
+    });
 
   }
  

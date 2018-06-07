@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import {Http, Headers, Response} from '@angular/http'
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
@@ -16,29 +16,38 @@ export class User {
   }
 }
 
+
 @Injectable()
 export class AuthServiceProvider {
 
-  constructor(public http:Http){}
+  constructor(private http:HttpClient){}
 
   currentUser: User;
 
-  public login(credentials) {
-    let access= false;
-    if (credentials.phoneNumber === null) {
-      //return Observable.throw("Please insert credentials");
-    } else {
-        var headers = new Headers();
-        headers.append('Content-Type','application/json');
-        console.log(JSON.stringify(credentials));
-        this.http.post('http://8sqm.com:3000/users/login',JSON.stringify(credentials),{headers:headers})
-        .map((res: Response) =>{
-        res.json();
-        console.log(res.json())
-        })
-        .subscribe(data=>{console.log(data)});
-    }
+    login(registerCredentials) {
+      var headers = new Headers();
+      headers.append('Content-Type', 'application/json');
+      console.log(JSON.stringify(registerCredentials));
+
+      let promise = new Promise((resolve, reject) => {
+          this.http.post('http://8sqm.com:3000/' + 'users/login', JSON.stringify(registerCredentials), {headers: new HttpHeaders({'Content-Type': 'application/json'})})
+          .subscribe((res: Response) => {
+              let userResponse = JSON.parse(JSON.stringify(res));
+              console.log(userResponse);
+              if (userResponse.code === 200) {
+                  let token = userResponse.data.token;
+                  console.log('setting local token: ' + token);
+                  localStorage.setItem('userToken', token);
+                   resolve(userResponse.data);
+              } else {
+                  reject('login failed');
+              }
+          });
+      });
+      return promise;
   }
+
+  
  
   public register(credentials) {
     if (credentials.phoneNumber === null) {
@@ -61,6 +70,26 @@ export class AuthServiceProvider {
       observer.next(true);
       observer.complete();
     });
+  }
+
+  vendorService(vendors){
+
+    console.log(JSON.stringify(vendors));
+
+    let promise = new Promise((resolve, reject) => {
+      this.http.post('http://8sqm.com:3000/services/nearby', JSON.stringify(vendors), {headers: new HttpHeaders({'Content-Type': 'application/json'})})
+      .subscribe((res: Response) => {
+          let userResponse = JSON.parse(JSON.stringify(res));
+          console.log(userResponse);
+           if (userResponse.code === 200) {
+                resolve(userResponse);
+           } 
+          else {
+              reject('Error');
+          }
+      });
+  });
+  return promise;
   }
 
 }
