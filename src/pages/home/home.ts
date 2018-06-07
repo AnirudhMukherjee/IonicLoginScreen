@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { NavController } from 'ionic-angular';
 import { AuthServiceProvider } from '../../providers/auth-service/auth-service';
+import { Geolocation } from '@ionic-native/geolocation';
 
 @Component({
   selector: 'page-home',
@@ -17,8 +18,13 @@ export class HomePage {
     lon: 72.8737
 }
   
-  constructor(public navCtrl: NavController, private auth: AuthServiceProvider) {
-
+  constructor(public navCtrl: NavController, private auth: AuthServiceProvider, private geolocation: Geolocation) {
+    this.geolocation.getCurrentPosition().then((resp) => {
+      this.vendors.lat =  resp.coords.latitude;
+      this.vendors.lon =  resp.coords.longitude;
+     }).catch((error) => {
+       console.log('Error getting location', error);
+     });
     this.auth.vendorService(this.vendors).then(userResponse => {
       console.log(userResponse);
       console.log(userResponse.code);
